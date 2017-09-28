@@ -1,17 +1,16 @@
 /* global test, expect, beforeEach */
-import { kea, resetKeaCache } from 'kea'
+import { kea, resetKeaCache, getStore } from 'kea'
 
 import PropTypes from 'prop-types'
 
 import '../thunk/install-plugin'
-import getStore from './helper/get-store'
 
 beforeEach(() => {
   resetKeaCache()
 })
 
 test('thunks work', () => {
-  const { store } = getStore()
+  const store = getStore()
 
   let thunkRan = false
 
@@ -46,7 +45,7 @@ test('thunks work', () => {
 })
 
 test('thunks can call thunks', () => {
-  const { store } = getStore()
+  const store = getStore()
 
   let firstThunkRan = false
   let secondThunkRan = false
@@ -85,7 +84,7 @@ test('thunks can call thunks', () => {
 })
 
 test('connected thunks work', () => {
-  const { store } = getStore()
+  const store = getStore()
 
   let thunkRan = false
 
