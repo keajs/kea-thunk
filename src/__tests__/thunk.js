@@ -44,3 +44,42 @@ test('thunks work', () => {
 
   expect(thunkRan).toBe(true)
 })
+
+test('thunks can call thunks', () => {
+  const { store } = getStore()
+
+  let firstThunkRan = false
+  let secondThunkRan = false
+
+  const firstLogic = kea({
+    path: () => ['scenes', 'homepage', 'first'],
+    actions: ({ constants }) => ({
+      updateName: name => ({ name })
+    }),
+    thunks: ({ actions, dispatch, getState }) => ({
+      updateNameAsync: name => {
+        firstThunkRan = true
+        dispatch(actions.updateName(name))
+      },
+      updateNameReallyAsync: name => {
+        secondThunkRan = true
+        dispatch(actions.updateNameAsync(name))
+      }
+    }),
+    reducers: ({ actions, constants }) => ({
+      name: ['chirpy', PropTypes.string, {
+        [actions.updateName]: (state, payload) => payload.name
+      }]
+    })
+  })
+
+  expect(firstLogic._keaPlugins.thunk).toBe(true)
+  expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync', 'updateNameReallyAsync'])
+  expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name', 'root'])
+
+  store.dispatch(firstLogic.actions.updateNameReallyAsync('derpy'))
+  expect(firstLogic.selectors.name(store.getState())).toBe('derpy')
+
+  expect(firstThunkRan).toBe(true)
+  expect(secondThunkRan).toBe(true)
+})
