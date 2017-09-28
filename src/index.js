@@ -1,0 +1,1 @@
+import './thunk/install-plugin'
