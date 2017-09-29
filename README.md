@@ -1,4 +1,4 @@
-![NPM Version](https://img.shields.io/npm/v/kea.svg)
+![NPM Version](https://img.shields.io/npm/v/kea-thunk.svg)
 
 ![Kea Logo](https://kea.rocks/img/logo.png)
 
