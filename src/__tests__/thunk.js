@@ -15,14 +15,14 @@ test('thunks work', () => {
   let thunkRan = false
 
   const firstLogic = kea({
-    path: () => ['scenes', 'homepage', 'first'],
+    path: () => ['scenes', 'thunks', 'first'],
     actions: ({ constants }) => ({
       updateName: name => ({ name })
     }),
     thunks: ({ actions, dispatch, getState }) => ({
       updateNameAsync: name => {
         thunkRan = true
-        dispatch(actions.updateName(name))
+        actions.updateName(name)
       }
     }),
     reducers: ({ actions, constants }) => ({
@@ -51,18 +51,18 @@ test('thunks can call thunks', () => {
   let secondThunkRan = false
 
   const firstLogic = kea({
-    path: () => ['scenes', 'homepage', 'first'],
+    path: () => ['scenes', 'thunks', 'first'],
     actions: ({ constants }) => ({
       updateName: name => ({ name })
     }),
     thunks: ({ actions, dispatch, getState }) => ({
       updateNameAsync: name => {
         firstThunkRan = true
-        dispatch(actions.updateName(name))
+        actions.updateName(name)
       },
       updateNameReallyAsync: name => {
         secondThunkRan = true
-        dispatch(actions.updateNameAsync(name))
+        actions.updateNameAsync(name)
       }
     }),
     reducers: ({ actions, constants }) => ({
@@ -89,14 +89,14 @@ test('connected thunks work', () => {
   let thunkRan = false
 
   const firstLogic = kea({
-    path: () => ['scenes', 'homepage', 'first'],
+    path: () => ['scenes', 'thunks', 'first'],
     actions: ({ constants }) => ({
       updateName: name => ({ name })
     }),
     thunks: ({ actions, dispatch, getState }) => ({
       updateNameAsync: name => {
         thunkRan = true
-        dispatch(actions.updateName(name))
+        actions.updateName(name)
       }
     }),
     reducers: ({ actions, constants }) => ({
@@ -129,4 +129,48 @@ test('connected thunks work', () => {
   expect(secondLogic.selectors.name(store.getState())).toBe('derpy')
 
   expect(thunkRan).toBe(true)
+})
+
+test('async works', () => {
+  const store = getStore()
+
+  let actionsRan = []
+
+  const instantPromise = () => new Promise(resolve => {
+    actionsRan.push('in promise')
+    resolve()
+  })
+
+  const asyncLogic = kea({
+    path: () => ['scenes', 'thunks', 'async'],
+    actions: ({ constants }) => ({
+      updateName: name => ({ name })
+    }),
+    thunks: ({ actions, dispatch, getState }) => ({
+      updateNameAsync: async name => {
+        actionsRan.push('before promise')
+        await instantPromise()
+        actionsRan.push('after promise')
+        await actions.anotherThunk()
+        actions.updateName(name)
+      },
+      anotherThunk: async () => {
+        actionsRan.push('another thunk ran')
+      }
+    }),
+    reducers: ({ actions, constants }) => ({
+      name: ['chirpy', PropTypes.string, {
+        [actions.updateName]: (state, payload) => payload.name
+      }]
+    })
+  })
+  actionsRan.push('before action')
+
+  return store.dispatch(asyncLogic.actions.updateNameAsync('derpy')).then(() => {
+    actionsRan.push('after dispatch')
+    expect(asyncLogic.selectors.name(store.getState())).toBe('derpy')
+    actionsRan.push('after action')
+
+    expect(actionsRan).toEqual(['before action', 'before promise', 'in promise', 'after promise', 'another thunk ran', 'after dispatch', 'after action'])
+  })
 })

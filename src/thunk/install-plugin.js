@@ -1,18 +1,5 @@
 import { activatePlugin } from 'kea'
-
-// import thunk from 'redux-thunk'
-function createThunkMiddleware (extraArgument) {
-  return ({ dispatch, getState }) => next => action => {
-    if (typeof action === 'function') {
-      return action(dispatch, getState, extraArgument)
-    }
-
-    return next(action)
-  }
-}
-
-const thunk = createThunkMiddleware()
-thunk.withExtraArgument = createThunkMiddleware
+import thunk from 'redux-thunk'
 
 activatePlugin({
   name: 'thunk',
@@ -33,14 +20,17 @@ activatePlugin({
 
       thunkKeys.forEach(thunkKey => {
         thunkFunctions[thunkKey] = (...args) => {
-          const action = (dispatch, getState) => {
+          return (dispatch, getState) => {
             if (!realThunks) {
-              realThunks = input.thunks({ ...output, dispatch, getState })
+              let actions = {}
+              Object.keys(output.actions).forEach(actionKey => {
+                actions[actionKey] = (...actionArgs) => dispatch(output.actions[actionKey](...actionArgs))
+                actions[actionKey].toString = output.actions[actionKey].toString
+              })
+              realThunks = input.thunks({ ...output, actions, dispatch, getState })
             }
-            realThunks[thunkKey](...args)
+            return realThunks[thunkKey](...args)
           }
-          action._isThunk = true
-          return action
         }
       })
       output.actions = Object.assign({}, output.actions, thunkFunctions)
