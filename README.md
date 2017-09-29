@@ -9,8 +9,8 @@ Redux-Thunk side effects for Kea 0.25+
 Install via yarn or npm
 
 ```sh
-yarn add kea-thunk
-npm install --save kea-thunk
+yarn add kea-thunk redux-thunk
+npm install --save kea-thunk redux-thunk
 ```
 
 Import `kea-thunk` in your app's entrypoint, before any `kea({})` calls take place:
