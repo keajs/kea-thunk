@@ -146,13 +146,18 @@ test('async works', () => {
     actions: ({ constants }) => ({
       updateName: name => ({ name })
     }),
-    thunks: ({ actions, dispatch, getState }) => ({
+    thunks: ({ actions, selectors, get, fetch, dispatch, getState }) => ({
       updateNameAsync: async name => {
         actionsRan.push('before promise')
         await instantPromise()
         actionsRan.push('after promise')
+
         await actions.anotherThunk()
         actions.updateName(name)
+
+        expect(selectors.name(getState())).toEqual('derpy')
+        expect(get('name')).toEqual('derpy')
+        expect(fetch('name')).toEqual({ name: 'derpy' })
       },
       anotherThunk: async () => {
         actionsRan.push('another thunk ran')
@@ -171,6 +176,14 @@ test('async works', () => {
     expect(asyncLogic.selectors.name(store.getState())).toBe('derpy')
     actionsRan.push('after action')
 
-    expect(actionsRan).toEqual(['before action', 'before promise', 'in promise', 'after promise', 'another thunk ran', 'after dispatch', 'after action'])
+    expect(actionsRan).toEqual([
+      'before action',
+      'before promise',
+      'in promise',
+      'after promise',
+      'another thunk ran',
+      'after dispatch',
+      'after action'
+    ])
   })
 })

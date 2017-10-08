@@ -1,6 +1,6 @@
 ![NPM Version](https://img.shields.io/npm/v/kea-thunk.svg)
 
-Redux-Thunk side effects for Kea 0.25+
+Redux-Thunk side effects for Kea
 
 [Read the documentation for Kea](https://kea.js.org/)
 
@@ -28,12 +28,15 @@ const logic = kea({
   actions: ({ constants }) => ({
     updateName: name => ({ name })
   }),
-  thunks: ({ actions, dispatch, getState }) => ({
+  thunks: ({ actions, dispatch, getState, get, fetch }) => ({
     updateNameAsync: async name => {
       await delay(1000)            // standard promise
       await actions.anotherThunk() // another thunk action
       actions.updateName(name)     // not a thunk, so no async needed
       dispatch({ type: 'RANDOM_REDUX_ACTION' }) // random redux action
+
+      get('name') // 'chirpy'
+      fetch('name', 'otherKey') // { name: 'chirpy', otherKey: undefined }
     },
     anotherThunk: async () => {
       // do something
@@ -46,6 +49,8 @@ const logic = kea({
   })
 })
 ```
+
+NB! As of `v0.2.0`, kea-thunk only supports singleton logic stores, so where there is no `key` defined. This will be fixed soon! :)
 
 # Store setup
 
