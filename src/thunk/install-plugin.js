@@ -36,8 +36,8 @@ activatePlugin({
     return !!input.thunks
   },
 
-  afterCreateSingleton: (active, input, output) => {
-    if (active) {
+  afterCreateSingleton: (input, output) => {
+    if (output.activePlugins.thunk) {
       let realThunks
       const thunkKeys = Object.keys(input.thunks(output))
       const thunkFunctions = {}

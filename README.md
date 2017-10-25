@@ -2,6 +2,10 @@
 
 Redux-Thunk side effects for Kea
 
+* kea-thunk 0.3 works with kea 0.27+
+* kea-thunk 0.2 works with kea 0.26
+* kea-thunk 0.1 works with kea 0.25
+
 [Read the documentation for Kea](https://kea.js.org/)
 
 # Usage
