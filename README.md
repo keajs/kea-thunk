@@ -17,10 +17,25 @@ yarn add kea-thunk redux-thunk
 npm install --save kea-thunk redux-thunk
 ```
 
-Import `kea-thunk` in your app's entrypoint, before any `kea({})` calls take place:
+Then install in one of the following ways. Make sure to run this before any call to `kea({})` takes place.
 
 ```js
-import 'kea-thunk'
+// the cleanest way
+import thunkPlugin from 'kea-thunk'
+import { getStore } from 'kea'
+
+const store = getStore({
+  plugins: [ thunkPlugin ]
+})
+
+// another way
+import thunkPlugin from 'kea-thunk'
+import { activatePlugin } from 'kea'
+
+activatePlugin(thunkPlugin)
+
+// the shortest way
+import 'kea-thunk/install'
 ```
 
 And just use the `thunks` key in your Kea logic stores like so:
@@ -58,17 +73,20 @@ NB! As of `v0.2.0`, kea-thunk only supports singleton logic stores, so where the
 
 # Store setup
 
-If you're using the `getStore()` helper from Kea, thunk functionality is automatically added to the store.
+If you're using the `getStore()` helper from Kea, thunk functionality is automatically added to the store if you give it the thunk plugin.
 
 However if you wish to manually set up your store, here are the steps:
 
 ```js
-import { keaReducer } from 'kea'
+import { keaReducer, activatePlugin } from 'kea'
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 
+import thunkPlugin from 'kea-thunk'
 import thunk from 'redux-thunk'
 
 export default function getStore () {
+  activatePlugin(thunkPlugin)
+
   const reducers = combineReducers({
     kea: keaReducer('kea'),
     scenes: keaReducer('scenes')

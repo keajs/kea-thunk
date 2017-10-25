@@ -8,6 +8,7 @@ Once we react 1.0 all deprecations will be removed and the project will switch t
 ## 0.3.0 - 2017-10-25
 ### Changed
 - Updated to the plugin system of kea 0.27
+- You must now manually install the plugin. See the README for details.
 
 ## 0.2.0 - 2017-10-08
 ### Changed

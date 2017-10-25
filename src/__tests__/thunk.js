@@ -1,12 +1,13 @@
 /* global test, expect, beforeEach */
-import { kea, resetKeaCache, getStore } from 'kea'
+import { kea, resetKeaCache, getStore, activatePlugin } from 'kea'
 
 import PropTypes from 'prop-types'
 
-import '../thunk/install-plugin'
+import thunkPlugin from '../index'
 
 beforeEach(() => {
   resetKeaCache()
+  activatePlugin(thunkPlugin)
 })
 
 test('thunks work', () => {
