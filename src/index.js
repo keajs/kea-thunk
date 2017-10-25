@@ -21,7 +21,7 @@ function createRealThunks (input, output, dispatch, getState) {
     return results
   }
 
-  return input.thunks({ ...output, actions, dispatch, getState, get, fetch })
+  return input.thunks(Object.assign({}, output, { actions, dispatch, getState, get, fetch }))
 }
 
 export default {
