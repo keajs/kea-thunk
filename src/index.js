@@ -27,6 +27,10 @@ function createRealThunks (input, output, dispatch, getState) {
 export default {
   name: 'thunk',
 
+  // plugin must be used globally
+  global: true,
+  local: false,
+
   beforeReduxStore: (options) => {
     options.middleware.push(thunk)
   },
