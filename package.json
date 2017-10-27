@@ -1,6 +1,6 @@
 {
   "name": "kea-thunk",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Thunk side effects with Kea",
   "author": "Marius Andra",
   "license": "MIT",
