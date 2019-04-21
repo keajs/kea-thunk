@@ -33,11 +33,11 @@ test('thunks work', () => {
     })
   })
 
-  expect(firstLogic._keaPlugins.thunk).toBe(true)
+  expect(firstLogic.plugins.map(p => p.name)).toEqual(['thunk'])
   expect(firstLogic._isKeaFunction).toBe(true)
   expect(firstLogic._isKeaSingleton).toBe(true)
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
-  expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name', 'root'])
+  expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
   store.dispatch(firstLogic.actions.updateNameAsync('derpy'))
   expect(firstLogic.selectors.name(store.getState())).toBe('derpy')
@@ -73,9 +73,9 @@ test('thunks can call thunks', () => {
     })
   })
 
-  expect(firstLogic._keaPlugins.thunk).toBe(true)
+  expect(firstLogic.plugins.map(p => p.name)).toEqual(['thunk'])
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync', 'updateNameReallyAsync'])
-  expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name', 'root'])
+  expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
   store.dispatch(firstLogic.actions.updateNameReallyAsync('derpy'))
   expect(firstLogic.selectors.name(store.getState())).toBe('derpy')
@@ -122,7 +122,7 @@ test('connected thunks work', () => {
     }
   })
 
-  expect(firstLogic._keaPlugins.thunk).toBe(true)
+  expect(firstLogic.plugins.map(p => p.name)).toEqual(['thunk'])
   expect(Object.keys(secondLogic.actions)).toEqual(['updateNameAsync'])
   expect(Object.keys(secondLogic.selectors).sort()).toEqual(['name'])
 

@@ -27,37 +27,30 @@ function createRealThunks (input, output, dispatch, getState) {
 export default {
   name: 'thunk',
 
-  // plugin must be used globally
-  global: true,
-  local: false,
-
   beforeReduxStore: (options) => {
     options.middleware.push(thunk)
   },
 
-  isActive: (input) => {
-    return !!input.thunks
-  },
-
-  afterCreateSingleton: (input, output) => {
-    if (output.activePlugins.thunk) {
-      let realThunks
-      const thunkKeys = Object.keys(input.thunks(output))
-      const thunkFunctions = {}
-
-      thunkKeys.forEach(thunkKey => {
-        thunkFunctions[thunkKey] = (...args) => {
-          return (dispatch, getState) => {
-            if (!realThunks) {
-              realThunks = createRealThunks(input, output, dispatch, getState)
-            }
-            return realThunks[thunkKey](...args)
-          }
-        }
-      })
-
-      output.created.actions = Object.assign({}, output.created.actions, thunkFunctions)
-      output.actions = Object.assign({}, output.actions, thunkFunctions)
+  afterCreate: (input, output) => {
+    if (!input.thunks) {
+      return
     }
+
+    let realThunks
+    const thunkKeys = Object.keys(input.thunks(output))
+    const thunkFunctions = {}
+
+    thunkKeys.forEach(thunkKey => {
+      thunkFunctions[thunkKey] = (...args) => {
+        return (dispatch, getState) => {
+          if (!realThunks) {
+            realThunks = createRealThunks(input, output, dispatch, getState)
+          }
+          return realThunks[thunkKey](...args)
+        }
+      }
+    })
+
+    output.actions = Object.assign({}, output.actions, thunkFunctions)
   }
 }
