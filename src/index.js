@@ -1,14 +1,14 @@
 import thunk from 'redux-thunk'
 
-function createRealThunks (input, output, dispatch, getState) {
+function createRealThunks (logic, input, dispatch, getState) {
   let actions = {}
 
-  Object.keys(output.actions).forEach(actionKey => {
-    actions[actionKey] = (...actionArgs) => dispatch(output.actions[actionKey](...actionArgs))
-    actions[actionKey].toString = output.actions[actionKey].toString
+  Object.keys(logic.actions).forEach(actionKey => {
+    actions[actionKey] = (...actionArgs) => dispatch(logic.actions[actionKey](...actionArgs))
+    actions[actionKey].toString = logic.actions[actionKey].toString
   })
 
-  const get = (key) => key ? output.selectors[key](getState()) : output.selector(getState())
+  const get = (key) => key ? logic.selectors[key](getState()) : logic.selector(getState())
   const fetch = function () {
     let results = {}
 
@@ -21,36 +21,36 @@ function createRealThunks (input, output, dispatch, getState) {
     return results
   }
 
-  return input.thunks(Object.assign({}, output, { actions, dispatch, getState, get, fetch }))
+  return input.thunks(Object.assign({}, logic, { actions, dispatch, getState, get, fetch }))
 }
 
 export default {
   name: 'thunk',
 
-  beforeReduxStore: (options) => {
+  beforeReduxStore (options) {
     options.middleware.push(thunk)
   },
 
-  afterCreate: (input, output) => {
+  afterCreate (logic, input) {
     if (!input.thunks) {
       return
     }
 
     let realThunks
-    const thunkKeys = Object.keys(input.thunks(output))
+    const thunkKeys = Object.keys(input.thunks(logic))
     const thunkFunctions = {}
 
     thunkKeys.forEach(thunkKey => {
       thunkFunctions[thunkKey] = (...args) => {
         return (dispatch, getState) => {
           if (!realThunks) {
-            realThunks = createRealThunks(input, output, dispatch, getState)
+            realThunks = createRealThunks(logic, input, dispatch, getState)
           }
           return realThunks[thunkKey](...args)
         }
       }
     })
 
-    output.actions = Object.assign({}, output.actions, thunkFunctions)
+    logic.actions = Object.assign({}, logic.actions, thunkFunctions)
   }
 }
