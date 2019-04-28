@@ -39,7 +39,7 @@ test('thunks are bound as actions', () => {
     })
   })
 
-  expect(thunkLogic.plugins.map(p => p.name)).toEqual(['thunk'])
+  expect(thunkLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(thunkLogic._isKeaFunction).toBe(true)
   expect(thunkLogic._isKeaSingleton).toBe(true)
   expect(Object.keys(thunkLogic.actions)).toEqual(['updateName', 'updateNameAsync'])

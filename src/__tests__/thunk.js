@@ -33,7 +33,7 @@ test('thunks work', () => {
     })
   })
 
-  expect(firstLogic.plugins.map(p => p.name)).toEqual(['thunk'])
+  expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(firstLogic._isKeaFunction).toBe(true)
   expect(firstLogic._isKeaSingleton).toBe(true)
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
@@ -73,7 +73,7 @@ test('thunks can call thunks', () => {
     })
   })
 
-  expect(firstLogic.plugins.map(p => p.name)).toEqual(['thunk'])
+  expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync', 'updateNameReallyAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
@@ -122,7 +122,7 @@ test('connected thunks work', () => {
     }
   })
 
-  expect(firstLogic.plugins.map(p => p.name)).toEqual(['thunk'])
+  expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(Object.keys(secondLogic.actions)).toEqual(['updateNameAsync'])
   expect(Object.keys(secondLogic.selectors).sort()).toEqual(['name'])
 

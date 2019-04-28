@@ -31,26 +31,28 @@ export default {
     options.middleware.push(thunk)
   },
 
-  afterCreate (logic, input) {
-    if (!input.thunks) {
-      return
-    }
-
-    let realThunks
-    const thunkKeys = Object.keys(input.thunks(logic))
-    const thunkFunctions = {}
-
-    thunkKeys.forEach(thunkKey => {
-      thunkFunctions[thunkKey] = (...args) => {
-        return (dispatch, getState) => {
-          if (!realThunks) {
-            realThunks = createRealThunks(logic, input, dispatch, getState)
-          }
-          return realThunks[thunkKey](...args)
-        }
+  logicSteps: {
+    thunks (logic, input) {
+      if (!input.thunks) {
+        return
       }
-    })
 
-    logic.actions = Object.assign({}, logic.actions, thunkFunctions)
+      let realThunks
+      const thunkKeys = Object.keys(input.thunks(logic))
+      const thunkFunctions = {}
+
+      thunkKeys.forEach(thunkKey => {
+        thunkFunctions[thunkKey] = (...args) => {
+          return (dispatch, getState) => {
+            if (!realThunks) {
+              realThunks = createRealThunks(logic, input, dispatch, getState)
+            }
+            return realThunks[thunkKey](...args)
+          }
+        }
+      })
+
+      logic.actions = Object.assign({}, logic.actions, thunkFunctions)
+    }
   }
 }
