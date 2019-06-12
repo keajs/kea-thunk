@@ -27,11 +27,13 @@ function createRealThunks (logic, input, dispatch, getState) {
 export default {
   name: 'thunk',
 
-  beforeReduxStore (options) {
-    options.middleware.push(thunk)
+  events: {
+    beforeReduxStore (options) {
+      options.middleware.push(thunk)
+    }
   },
 
-  logicSteps: {
+  buildSteps: {
     thunks (logic, input) {
       if (!input.thunks) {
         return

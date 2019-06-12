@@ -1,12 +1,12 @@
 /* global test, expect, beforeEach */
-import { kea, resetKeaCache, getStore, activatePlugin } from 'kea'
+import { kea, resetContext, getStore, activatePlugin } from 'kea'
 
 import PropTypes from 'prop-types'
 
 import thunkPlugin from '../index'
 
 beforeEach(() => {
-  resetKeaCache()
+  resetContext({ autoMount: true })
   activatePlugin(thunkPlugin)
 })
 
@@ -34,8 +34,8 @@ test('thunks work', () => {
   })
 
   expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
-  expect(firstLogic._isKeaFunction).toBe(true)
-  expect(firstLogic._isKeaSingleton).toBe(true)
+  expect(firstLogic._isKea).toBe(true)
+  expect(firstLogic._isKeaWithKey).toBe(false)
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 

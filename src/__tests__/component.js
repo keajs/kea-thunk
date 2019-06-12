@@ -1,5 +1,5 @@
 /* global test, expect, beforeEach */
-import { kea, resetKeaCache, getStore, activatePlugin } from 'kea'
+import { kea, resetContext, getStore, activatePlugin } from 'kea'
 import thunkPlugin from '../index' // install the plugin
 
 import './helper/jsdom'
@@ -12,7 +12,7 @@ import Adapter from 'enzyme-adapter-react-16'
 configure({ adapter: new Adapter() })
 
 beforeEach(() => {
-  resetKeaCache()
+  resetContext()
   activatePlugin(thunkPlugin)
 })
 
@@ -40,8 +40,8 @@ test('thunks are bound as actions', () => {
   })
 
   expect(thunkLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
-  expect(thunkLogic._isKeaFunction).toBe(true)
-  expect(thunkLogic._isKeaSingleton).toBe(true)
+  expect(thunkLogic._isKea).toBe(true)
+  expect(thunkLogic._isKeaWithKey).toBe(false)
   expect(Object.keys(thunkLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
   expect(Object.keys(thunkLogic.selectors).sort()).toEqual(['name'])
 
