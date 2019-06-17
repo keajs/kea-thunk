@@ -1,5 +1,5 @@
 /* global test, expect, beforeEach */
-import { kea, resetContext, getStore, activatePlugin } from 'kea'
+import { kea, resetContext, getStore, activatePlugin, getContext } from 'kea'
 import thunkPlugin from '../index' // install the plugin
 
 import './helper/jsdom'
@@ -39,7 +39,7 @@ test('thunks are bound as actions', () => {
     })
   })
 
-  expect(thunkLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(thunkLogic._isKea).toBe(true)
   expect(thunkLogic._isKeaWithKey).toBe(false)
   expect(Object.keys(thunkLogic.actions)).toEqual(['updateName', 'updateNameAsync'])

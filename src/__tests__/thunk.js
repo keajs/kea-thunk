@@ -1,5 +1,5 @@
 /* global test, expect, beforeEach */
-import { kea, resetContext, getStore, activatePlugin } from 'kea'
+import { kea, resetContext, getStore, activatePlugin, getContext } from 'kea'
 
 import PropTypes from 'prop-types'
 
@@ -33,7 +33,7 @@ test('thunks work', () => {
     })
   })
 
-  expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(firstLogic._isKea).toBe(true)
   expect(firstLogic._isKeaWithKey).toBe(false)
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
@@ -73,7 +73,7 @@ test('thunks can call thunks', () => {
     })
   })
 
-  expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync', 'updateNameReallyAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
@@ -122,7 +122,7 @@ test('connected thunks work', () => {
     }
   })
 
-  expect(firstLogic.plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(Object.keys(secondLogic.actions)).toEqual(['updateNameAsync'])
   expect(Object.keys(secondLogic.selectors).sort()).toEqual(['name'])
 
