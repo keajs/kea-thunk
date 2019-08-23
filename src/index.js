@@ -1,13 +1,6 @@
 import thunk from 'redux-thunk'
 
 function createRealThunks (logic, input, dispatch, getState) {
-  let actions = {}
-
-  Object.keys(logic.actions).forEach(actionKey => {
-    actions[actionKey] = (...actionArgs) => dispatch(logic.actions[actionKey](...actionArgs))
-    actions[actionKey].toString = logic.actions[actionKey].toString
-  })
-
   const get = (key) => key ? logic.selectors[key](getState()) : logic.selector(getState())
   const fetch = function () {
     let results = {}
@@ -21,7 +14,7 @@ function createRealThunks (logic, input, dispatch, getState) {
     return results
   }
 
-  return input.thunks(Object.assign({}, logic, { actions, dispatch, getState, get, fetch }))
+  return input.thunks(Object.assign({}, logic, { dispatch, getState, get, fetch }))
 }
 
 export default {
@@ -34,7 +27,7 @@ export default {
   },
 
   buildSteps: {
-    thunks (logic, input) {
+    actionCreators (logic, input) {
       if (!input.thunks) {
         return
       }
@@ -54,7 +47,7 @@ export default {
         }
       })
 
-      logic.actions = Object.assign({}, logic.actions, thunkFunctions)
+      logic.actionCreators = Object.assign({}, logic.actionCreators, thunkFunctions)
     }
   }
 }

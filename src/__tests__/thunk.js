@@ -39,7 +39,7 @@ test('thunks work', () => {
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
-  store.dispatch(firstLogic.actions.updateNameAsync('derpy'))
+  firstLogic.actions.updateNameAsync('derpy')
   expect(firstLogic.selectors.name(store.getState())).toBe('derpy')
 
   expect(thunkRan).toBe(true)
@@ -77,7 +77,7 @@ test('thunks can call thunks', () => {
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync', 'updateNameReallyAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
-  store.dispatch(firstLogic.actions.updateNameReallyAsync('derpy'))
+  store.dispatch(firstLogic.actionCreators.updateNameReallyAsync('derpy'))
   expect(firstLogic.selectors.name(store.getState())).toBe('derpy')
 
   expect(firstThunkRan).toBe(true)
@@ -126,7 +126,7 @@ test('connected thunks work', () => {
   expect(Object.keys(secondLogic.actions)).toEqual(['updateNameAsync'])
   expect(Object.keys(secondLogic.selectors).sort()).toEqual(['name'])
 
-  store.dispatch(secondLogic.actions.updateNameAsync('derpy'))
+  secondLogic.actions.updateNameAsync('derpy')
   expect(secondLogic.selectors.name(store.getState())).toBe('derpy')
 
   expect(thunkRan).toBe(true)
@@ -172,7 +172,7 @@ test('async works', () => {
   })
   actionsRan.push('before action')
 
-  return store.dispatch(asyncLogic.actions.updateNameAsync('derpy')).then(() => {
+  return store.dispatch(asyncLogic.actionCreators.updateNameAsync('derpy')).then(() => {
     actionsRan.push('after dispatch')
     expect(asyncLogic.selectors.name(store.getState())).toBe('derpy')
     actionsRan.push('after action')
