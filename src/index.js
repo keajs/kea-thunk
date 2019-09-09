@@ -26,8 +26,12 @@ export default {
     }
   },
 
+  buildOrder: {
+    thunks: { after: 'actionCreators' }
+  },
+
   buildSteps: {
-    actionCreators (logic, input) {
+    thunks (logic, input) {
       if (!input.thunks) {
         return
       }
