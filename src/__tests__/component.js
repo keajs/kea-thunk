@@ -42,11 +42,6 @@ test('thunks are bound as actions', () => {
   expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
   expect(thunkLogic._isKea).toBe(true)
   expect(thunkLogic._isKeaWithKey).toBe(false)
-  expect(Object.keys(thunkLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
-  expect(Object.keys(thunkLogic.selectors).sort()).toEqual(['name'])
-
-  // store.dispatch(thunkLogic.actions.updateNameAsync('derpy'))
-  // expect(thunkLogic.selectors.name(store.getState())).toBe('derpy')
 
   expect(thunkRan).toBe(false)
 
@@ -64,6 +59,9 @@ test('thunks are bound as actions', () => {
       <ConnectedComponent id={12} />
     </Provider>
   )
+
+  expect(Object.keys(thunkLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
+  expect(Object.keys(thunkLogic.selectors).sort()).toEqual(['name'])
 
   expect(thunkRan).toBe(false)
 
