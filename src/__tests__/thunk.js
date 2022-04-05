@@ -1,41 +1,44 @@
 /* global test, expect, beforeEach */
-import { kea, resetContext, getStore, activatePlugin, getContext } from 'kea'
+import { kea, resetContext, getContext } from 'kea'
 
 import PropTypes from 'prop-types'
 
 import thunkPlugin from '../index'
 
 beforeEach(() => {
-  resetContext({ autoMount: true })
-  activatePlugin(thunkPlugin)
+  resetContext({ plugins: [thunkPlugin] })
 })
 
 test('thunks work', () => {
-  const store = getStore()
+  const store = getContext().store
 
   let thunkRan = false
 
   const firstLogic = kea({
     path: () => ['scenes', 'thunks', 'first'],
     actions: ({ constants }) => ({
-      updateName: name => ({ name })
+      updateName: (name) => ({ name }),
     }),
     thunks: ({ actions, dispatch, getState }) => ({
-      updateNameAsync: name => {
+      updateNameAsync: (name) => {
         thunkRan = true
         actions.updateName(name)
-      }
+      },
     }),
     reducers: ({ actions, constants }) => ({
-      name: ['chirpy', PropTypes.string, {
-        [actions.updateName]: (state, payload) => payload.name
-      }]
-    })
+      name: [
+        'chirpy',
+        PropTypes.string,
+        {
+          [actions.updateName]: (state, payload) => payload.name,
+        },
+      ],
+    }),
   })
+  firstLogic.mount()
 
-  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map((p) => p.name)).toEqual(['core', 'thunk'])
   expect(firstLogic._isKea).toBe(true)
-  expect(firstLogic._isKeaWithKey).toBe(false)
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
@@ -46,7 +49,7 @@ test('thunks work', () => {
 })
 
 test('thunks can call thunks', () => {
-  const store = getStore()
+  const store = getContext().store
 
   let firstThunkRan = false
   let secondThunkRan = false
@@ -54,26 +57,31 @@ test('thunks can call thunks', () => {
   const firstLogic = kea({
     path: () => ['scenes', 'thunks', 'first'],
     actions: ({ constants }) => ({
-      updateName: name => ({ name })
+      updateName: (name) => ({ name }),
     }),
     thunks: ({ actions, dispatch, getState }) => ({
-      updateNameAsync: name => {
+      updateNameAsync: (name) => {
         firstThunkRan = true
         actions.updateName(name)
       },
-      updateNameReallyAsync: name => {
+      updateNameReallyAsync: (name) => {
         secondThunkRan = true
         actions.updateNameAsync(name)
-      }
+      },
     }),
     reducers: ({ actions, constants }) => ({
-      name: ['chirpy', PropTypes.string, {
-        [actions.updateName]: (state, payload) => payload.name
-      }]
-    })
+      name: [
+        'chirpy',
+        PropTypes.string,
+        {
+          [actions.updateName]: (state, payload) => payload.name,
+        },
+      ],
+    }),
   })
+  firstLogic.mount()
 
-  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map((p) => p.name)).toEqual(['core', 'thunk'])
   expect(Object.keys(firstLogic.actions)).toEqual(['updateName', 'updateNameAsync', 'updateNameReallyAsync'])
   expect(Object.keys(firstLogic.selectors).sort()).toEqual(['name'])
 
@@ -85,44 +93,42 @@ test('thunks can call thunks', () => {
 })
 
 test('connected thunks work', () => {
-  const store = getStore()
+  const store = getContext().store
 
   let thunkRan = false
 
   const firstLogic = kea({
     path: () => ['scenes', 'thunks', 'first'],
     actions: ({ constants }) => ({
-      updateName: name => ({ name })
+      updateName: (name) => ({ name }),
     }),
     thunks: ({ actions, dispatch, getState }) => ({
-      updateNameAsync: name => {
+      updateNameAsync: (name) => {
         thunkRan = true
         actions.updateName(name)
-      }
+      },
     }),
     reducers: ({ actions, constants }) => ({
-      name: ['chirpy', PropTypes.string, {
-        [actions.updateName]: (state, payload) => payload.name
-      }]
-    })
+      name: [
+        'chirpy',
+        PropTypes.string,
+        {
+          [actions.updateName]: (state, payload) => payload.name,
+        },
+      ],
+    }),
   })
+  firstLogic.mount()
 
   const secondLogic = kea({
     connect: {
-      actions: [
-        firstLogic, [
-          'updateNameAsync'
-        ]
-      ],
-      props: [
-        firstLogic, [
-          'name'
-        ]
-      ]
-    }
+      actions: [firstLogic, ['updateNameAsync']],
+      props: [firstLogic, ['name']],
+    },
   })
+  secondLogic.mount()
 
-  expect(getContext().plugins.activated.map(p => p.name)).toEqual(['core', 'thunk'])
+  expect(getContext().plugins.activated.map((p) => p.name)).toEqual(['core', 'thunk'])
   expect(Object.keys(secondLogic.actions)).toEqual(['updateNameAsync'])
   expect(Object.keys(secondLogic.selectors).sort()).toEqual(['name'])
 
@@ -133,22 +139,23 @@ test('connected thunks work', () => {
 })
 
 test('async works', () => {
-  const store = getStore()
+  const store = getContext().store
 
   let actionsRan = []
 
-  const instantPromise = () => new Promise(resolve => {
-    actionsRan.push('in promise')
-    resolve()
-  })
+  const instantPromise = () =>
+    new Promise((resolve) => {
+      actionsRan.push('in promise')
+      resolve()
+    })
 
   const asyncLogic = kea({
     path: () => ['scenes', 'thunks', 'async'],
     actions: ({ constants }) => ({
-      updateName: name => ({ name })
+      updateName: (name) => ({ name }),
     }),
     thunks: ({ actions, selectors, get, fetch, dispatch, getState }) => ({
-      updateNameAsync: async name => {
+      updateNameAsync: async (name) => {
         actionsRan.push('before promise')
         await instantPromise()
         actionsRan.push('after promise')
@@ -162,14 +169,19 @@ test('async works', () => {
       },
       anotherThunk: async () => {
         actionsRan.push('another thunk ran')
-      }
+      },
     }),
     reducers: ({ actions, constants }) => ({
-      name: ['chirpy', PropTypes.string, {
-        [actions.updateName]: (state, payload) => payload.name
-      }]
-    })
+      name: [
+        'chirpy',
+        PropTypes.string,
+        {
+          [actions.updateName]: (state, payload) => payload.name,
+        },
+      ],
+    }),
   })
+  asyncLogic.mount()
   actionsRan.push('before action')
 
   return store.dispatch(asyncLogic.actionCreators.updateNameAsync('derpy')).then(() => {
@@ -184,7 +196,7 @@ test('async works', () => {
       'after promise',
       'another thunk ran',
       'after dispatch',
-      'after action'
+      'after action',
     ])
   })
 })
