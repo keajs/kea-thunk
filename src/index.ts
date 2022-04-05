@@ -34,10 +34,7 @@ export function thunks<L extends Logic = Logic>(input: (logic: BuiltLogicWithThu
 
     for (const [key, thunk] of Object.entries(thunks)) {
       logic.actions[key] = (...args: any[]) => thunk(...args)
-      logic.actionCreators[key] =
-        (...args: any[]) =>
-        () =>
-          thunk(...args)
+      logic.actionCreators[key] = (...args: any[]) => () => thunk(...args)
     }
   }
 }
