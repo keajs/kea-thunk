@@ -1,8 +1,5 @@
 /* global test, expect, beforeEach */
 import { kea, resetContext, getContext } from 'kea'
-
-import PropTypes from 'prop-types'
-
 import thunkPlugin from '../index'
 
 beforeEach(() => {
@@ -28,7 +25,6 @@ test('thunks work', () => {
     reducers: ({ actions, constants }) => ({
       name: [
         'chirpy',
-        PropTypes.string,
         {
           [actions.updateName]: (state, payload) => payload.name,
         },
@@ -72,7 +68,6 @@ test('thunks can call thunks', () => {
     reducers: ({ actions, constants }) => ({
       name: [
         'chirpy',
-        PropTypes.string,
         {
           [actions.updateName]: (state, payload) => payload.name,
         },
@@ -111,7 +106,6 @@ test('connected thunks work', () => {
     reducers: ({ actions, constants }) => ({
       name: [
         'chirpy',
-        PropTypes.string,
         {
           [actions.updateName]: (state, payload) => payload.name,
         },
@@ -174,7 +168,6 @@ test('async works', () => {
     reducers: ({ actions, constants }) => ({
       name: [
         'chirpy',
-        PropTypes.string,
         {
           [actions.updateName]: (state, payload) => payload.name,
         },
